@@ -4,18 +4,19 @@ Copy-paste OpenShift manifests for deploying open-weight LLMs with vLLM. New mod
 
 ## How it works
 
-Each model gets a YAML recipe in `models/<org>/<repo>.yaml`. Push to `main` and GitHub Actions builds the site with ready-to-use ServingRuntime + InferenceService manifests.
+Each model gets a YAML recipe in `docs/models/<org>/<repo>.yaml`. Merge a PR to `main` and GitHub Actions builds the site with ready-to-use ServingRuntime + InferenceService manifests.
 
 ## Adding a recipe
 
-1. Create `models/<hf-org>/<hf-repo>.yaml` (see existing recipes for the format)
-2. Run `pnpm validate` to check your YAML
-3. Run `pnpm dev` to preview at http://localhost:3000
-4. Push — the site rebuilds automatically
+1. Create `docs/models/<hf-org>/<hf-repo>.yaml` (see existing recipes for the format)
+2. Run `pnpm validate` from `docs/` to check your YAML
+3. Run `pnpm dev` from `docs/` to preview at http://localhost:3000
+4. Open a PR — the site rebuilds on merge
 
 ## Development
 
 ```bash
+cd docs
 pnpm install
 pnpm dev          # http://localhost:3000
 pnpm validate     # check all recipe YAML files

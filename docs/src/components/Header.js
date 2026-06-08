@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { Box } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Box className="h-5 w-5 text-accent" />
+          <Image src="/openshift-icon.png" alt="OpenShift" width={24} height={24} />
           <span>vLLM on OpenShift</span>
           <span className="text-muted-foreground">/ recipes</span>
         </Link>

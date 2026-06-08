@@ -5,6 +5,9 @@ export const metadata = {
   title: 'vLLM on OpenShift — Deployment Recipes',
   description:
     'Copy-paste OpenShift manifests for deploying LLMs with vLLM. New model? New recipe. oc apply and go.',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({ children }) {

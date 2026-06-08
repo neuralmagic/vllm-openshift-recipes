@@ -81,7 +81,13 @@ export default async function RecipePage({ params }) {
         </div>
       </header>
 
-      <hr className="border-border" />
+      <div className="rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground">
+        These manifests assume you have OpenShift with the GPU Operator and
+        RHOAI/KServe installed.{' '}
+        <Link href="/prerequisites" className="text-accent hover:underline">
+          Check prerequisites &rarr;
+        </Link>
+      </div>
 
       <ManifestBuilder recipe={recipe} />
 

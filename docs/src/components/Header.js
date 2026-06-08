@@ -17,6 +17,12 @@ export default function Header() {
           >
             Browse
           </Link>
+          <Link
+            href="/prerequisites"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Prerequisites
+          </Link>
           <a
             href="https://docs.vllm.ai"
             target="_blank"

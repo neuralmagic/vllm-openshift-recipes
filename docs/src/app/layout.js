@@ -6,7 +6,7 @@ export const metadata = {
   description:
     'Copy-paste OpenShift manifests for deploying LLMs with vLLM. New model? New recipe. oc apply and go.',
   icons: {
-    icon: '/favicon.png',
+    icon: '/vllm-openshift-recipes/favicon.png',
   },
 };
 

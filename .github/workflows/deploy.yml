@@ -19,6 +19,9 @@ jobs:
   build:
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
     steps:
       - uses: actions/checkout@v4
 
@@ -28,16 +31,19 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: docs/pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: docs/out
 
   deploy:
     runs-on: ubuntu-latest

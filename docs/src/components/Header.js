@@ -6,7 +6,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Image src="/vllm-openshift-recipes/openshift-icon.png" alt="OpenShift" width={24} height={24} />
+          <Image src="/vllm-openshift-recipes/openshift-icon.svg" alt="OpenShift" width={24} height={24} />
           <span>vLLM on OpenShift</span>
           <span className="text-muted-foreground">/ recipes</span>
         </Link>

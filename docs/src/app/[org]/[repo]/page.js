@@ -36,32 +36,32 @@ export default async function RecipePage({ params }) {
       <div>
         <Link
           href="/browse"
-          className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           &larr; All recipes
         </Link>
       </div>
 
       <header className="space-y-3">
-        <p className="text-sm font-medium text-[var(--accent)]">
+        <p className="text-sm font-medium text-accent">
           {recipe.meta.provider}
         </p>
         <h1 className="text-3xl font-bold tracking-tight">
           {recipe.meta.title}
         </h1>
-        <p className="text-lg text-[var(--muted-foreground)]">
+        <p className="text-lg text-muted-foreground">
           {recipe.meta.description}
         </p>
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <span className="rounded bg-[var(--muted)] px-2 py-1 font-mono">
+          <span className="rounded bg-muted px-2 py-1 font-mono">
             {recipe.model.parameter_count}
           </span>
           {recipe.model.architecture === 'moe' && (
-            <span className="rounded bg-[var(--muted)] px-2 py-1 font-mono">
+            <span className="rounded bg-muted px-2 py-1 font-mono">
               {recipe.model.active_parameters} active
             </span>
           )}
-          <span className="rounded bg-[var(--muted)] px-2 py-1 font-mono">
+          <span className="rounded bg-muted px-2 py-1 font-mono">
             {recipe.model.context_length.toLocaleString()} ctx
           </span>
           {recipe.meta.tasks.map((task) => (
@@ -75,19 +75,19 @@ export default async function RecipePage({ params }) {
               {task}
             </span>
           ))}
-          <span className="text-[var(--muted-foreground)]">
+          <span className="text-muted-foreground">
             {recipe.model.architecture}
           </span>
         </div>
       </header>
 
-      <hr className="border-[var(--border)]" />
+      <hr className="border-border" />
 
       <ManifestBuilder recipe={recipe} />
 
       {recipe.guide && (
         <>
-          <hr className="border-[var(--border)]" />
+          <hr className="border-border" />
           <article className="prose prose-sm dark:prose-invert max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {recipe.guide}

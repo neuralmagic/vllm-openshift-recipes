@@ -11,10 +11,10 @@ export default function Home() {
         <h1 className="text-4xl font-bold tracking-tight">
           Deploy LLMs on OpenShift
         </h1>
-        <p className="max-w-2xl text-lg text-[var(--muted-foreground)]">
+        <p className="max-w-2xl text-lg text-muted-foreground">
           Copy-paste deployment manifests for running open-weight models with
           vLLM on OpenShift. Pick a model, choose a variant, and{' '}
-          <code className="rounded bg-[var(--muted)] px-1.5 py-0.5 text-sm font-mono">
+          <code className="rounded bg-muted px-1.5 py-0.5 text-sm font-mono">
             oc apply -f
           </code>
           .
@@ -29,7 +29,7 @@ export default function Home() {
           {recipes.length > 8 && (
             <Link
               href="/browse"
-              className="text-sm text-[var(--accent)] hover:underline"
+              className="text-sm text-accent hover:underline"
             >
               View all {recipes.length} &rarr;
             </Link>

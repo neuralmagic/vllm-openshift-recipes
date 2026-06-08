@@ -8,22 +8,22 @@ export default function RecipeCard({ recipe }) {
   return (
     <Link
       href={`/${recipe.org}/${recipe.repo}`}
-      className="group block rounded-lg border border-[var(--border)] bg-[var(--card)] p-4 transition-all hover:border-[var(--accent)] hover:shadow-md"
+      className="group block rounded-lg border border-border bg-card p-4 transition-all hover:border-accent hover:shadow-md"
     >
       <div className="mb-2 flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-[var(--muted-foreground)]">
+          <p className="text-xs font-medium text-muted-foreground">
             {recipe.meta.provider}
           </p>
-          <h3 className="font-semibold text-[var(--card-foreground)] group-hover:text-[var(--accent)] transition-colors">
+          <h3 className="font-semibold text-card-foreground group-hover:text-accent transition-colors">
             {recipe.meta.title}
           </h3>
         </div>
-        <span className="rounded bg-[var(--muted)] px-2 py-0.5 text-xs font-mono text-[var(--muted-foreground)]">
+        <span className="rounded bg-muted px-2 py-0.5 text-xs font-mono text-muted-foreground">
           {recipe.model.parameter_count}
         </span>
       </div>
-      <p className="mb-3 text-sm text-[var(--muted-foreground)] line-clamp-2">
+      <p className="mb-3 text-sm text-muted-foreground line-clamp-2">
         {recipe.meta.description}
       </p>
       <div className="flex flex-wrap gap-1.5">

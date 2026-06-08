@@ -13,12 +13,12 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen antialiased">
         <Header />
         <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
-        <footer className="border-t border-[var(--border)] py-6 text-center text-sm text-[var(--muted-foreground)]">
+        <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
           <div className="mx-auto max-w-6xl px-4">
             Built for day-zero model deployments on OpenShift.{' '}
             <a
-              href="https://github.com/redhat-et/vllm-openshift-recipes"
-              className="underline hover:text-[var(--foreground)]"
+              href="https://github.com/neuralmagic/vllm-openshift-recipes"
+              className="underline hover:text-foreground"
             >
               Contribute a recipe
             </a>

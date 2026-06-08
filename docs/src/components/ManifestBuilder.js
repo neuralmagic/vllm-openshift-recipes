@@ -25,8 +25,8 @@ export default function ManifestBuilder({ recipe }) {
               onClick={() => setSelectedVariant(v.key)}
               className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
                 selectedVariant === v.key
-                  ? 'border-[var(--accent)] bg-[var(--accent)] text-white'
-                  : 'border-[var(--border)] hover:border-[var(--accent)]'
+                  ? 'border-accent bg-accent text-white'
+                  : 'border-border hover:border-accent'
               }`}
             >
               <span className="font-mono">{v.precision.toUpperCase()}</span>
@@ -37,7 +37,7 @@ export default function ManifestBuilder({ recipe }) {
           ))}
         </div>
         {variant && (
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          <p className="mt-2 text-sm text-muted-foreground">
             {variant.description}
           </p>
         )}
@@ -48,33 +48,33 @@ export default function ManifestBuilder({ recipe }) {
           <h2 className="text-lg font-semibold">Deploy with oc apply</h2>
           <CopyButton text={combined} />
         </div>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <p className="text-sm text-muted-foreground">
           Save the YAML below to a file and run{' '}
-          <code className="rounded bg-[var(--muted)] px-1.5 py-0.5 text-xs font-mono">
+          <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono">
             oc apply -f deploy.yaml
           </code>
         </p>
 
         <div>
           <div className="mb-1 flex items-center justify-between">
-            <span className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wide">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               ServingRuntime
             </span>
             <CopyButton text={servingRuntime} className="text-[10px]" />
           </div>
-          <pre className="overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--muted)] p-4 text-sm font-mono leading-relaxed">
+          <pre className="overflow-x-auto rounded-lg border border-border bg-muted p-4 text-sm font-mono leading-relaxed">
             {servingRuntime}
           </pre>
         </div>
 
         <div>
           <div className="mb-1 flex items-center justify-between">
-            <span className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wide">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               InferenceService
             </span>
             <CopyButton text={inferenceService} className="text-[10px]" />
           </div>
-          <pre className="overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--muted)] p-4 text-sm font-mono leading-relaxed">
+          <pre className="overflow-x-auto rounded-lg border border-border bg-muted p-4 text-sm font-mono leading-relaxed">
             {inferenceService}
           </pre>
         </div>

@@ -13,7 +13,7 @@ export default function Browse() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">All Recipes</h1>
-        <p className="text-[var(--muted-foreground)]">
+        <p className="text-muted-foreground">
           {recipes.length} model{recipes.length !== 1 ? 's' : ''} ready for
           OpenShift deployment
         </p>
@@ -27,7 +27,7 @@ export default function Browse() {
           <section key={provider} className="space-y-3">
             <h2 className="text-lg font-semibold">
               {provider}{' '}
-              <span className="text-sm font-normal text-[var(--muted-foreground)]">
+              <span className="text-sm font-normal text-muted-foreground">
                 ({providerRecipes.length})
               </span>
             </h2>

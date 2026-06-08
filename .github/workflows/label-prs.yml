@@ -1,0 +1,32 @@
+name: Label PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new model recipes
+        id: check
+        run: |
+          FILES=$(gh pr diff ${{ github.event.pull_request.number }} --name-only)
+          if echo "$FILES" | grep -q '^docs/models/'; then
+            echo "is_model=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_model=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add model label
+        if: steps.check.outputs.is_model == 'true'
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-label "new-model"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

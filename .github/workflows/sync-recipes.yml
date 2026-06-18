@@ -1,0 +1,96 @@
+name: Sync deployment recipes
+
+on:
+  repository_dispatch:
+    types: [sync-deployment]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: docs/package.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: docs/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Convert deployments to recipes
+        id: convert
+        run: |
+          BRANCH="auto/sync-recipes-$(date +%Y%m%d-%H%M%S)"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          git checkout -b "$BRANCH"
+
+          CONVERTED=0
+          FILES='${{ toJson(github.event.client_payload.files) }}'
+          echo "$FILES" | node -e "
+            const fs = require('fs');
+            const files = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+            files.forEach((f, i) => {
+              const path = '/tmp/deployment-' + i + '.yaml';
+              fs.writeFileSync(path, f.content);
+              console.log(path);
+            });
+          " | while read -r tmpfile; do
+            echo "Converting $tmpfile..."
+            RECIPE=$(node scripts/convert-deployment.mjs "$tmpfile")
+
+            MODEL_ID=$(echo "$RECIPE" | grep 'model_id:' | head -1 | sed 's/.*model_id: *//')
+            ORG=$(echo "$MODEL_ID" | cut -d'/' -f1 | tr '[:upper:]' '[:lower:]')
+            REPO=$(echo "$MODEL_ID" | cut -d'/' -f2-)
+            SLUG=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+
+            mkdir -p "models/$ORG"
+            echo "$RECIPE" > "models/$ORG/$SLUG.yaml"
+            echo "  → models/$ORG/$SLUG.yaml"
+            CONVERTED=$((CONVERTED + 1))
+          done
+
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard models/)" ]; then
+            echo "count=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "count=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create PR
+        if: steps.convert.outputs.count != '0'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/models/
+          git commit -m "add: auto-synced model recipes"
+          git push origin "${{ steps.convert.outputs.branch }}"
+
+          gh pr create \
+            --title "add: auto-synced model recipes" \
+            --body "$(cat <<'PREOF'
+          ## Summary
+
+          Auto-generated from deployment YAMLs via repository dispatch.
+
+          **Review checklist — fill in any remaining TODOs:**
+          - [ ] `meta.description` — verify model description
+          - [ ] `meta.tasks` — verify task type (text, multimodal, embedding, omni)
+          - [ ] `model.architecture` — verify (dense or moe)
+          - [ ] `variants.default.description` — add variant description
+          - [ ] Add `guide` section if desired
+          PREOF
+          )"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

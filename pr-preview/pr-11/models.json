@@ -1,0 +1,98 @@
+[
+  {
+    "org": "google",
+    "repo": "gemma-4-12b-it",
+    "slug": "google/gemma-4-12b-it",
+    "title": "Gemma 4 12B IT",
+    "provider": "Google",
+    "description": "Encoder-free multimodal 12B model supporting text, image, and audio input. Fits on a single GPU.",
+    "date_updated": "2026-06-08T00:00:00.000Z",
+    "tasks": [
+      "multimodal"
+    ],
+    "architecture": "dense",
+    "parameter_count": "12B",
+    "active_parameters": "12B",
+    "context_length": 256000,
+    "variants": [
+      {
+        "key": "default",
+        "precision": "bf16",
+        "min_gpus": 1,
+        "vram_minimum_gb": 29
+      }
+    ]
+  },
+  {
+    "org": "meta-llama",
+    "repo": "llama-3.1-8b-instruct",
+    "slug": "meta-llama/llama-3.1-8b-instruct",
+    "title": "Llama 3.1 8B Instruct",
+    "provider": "Meta",
+    "description": "The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models...",
+    "date_updated": "2026-06-18",
+    "tasks": [
+      "text"
+    ],
+    "architecture": "dense",
+    "parameter_count": "8B",
+    "active_parameters": "8B",
+    "context_length": 8192,
+    "variants": [
+      {
+        "key": "default",
+        "precision": "bf16",
+        "min_gpus": 1,
+        "vram_minimum_gb": 80
+      }
+    ]
+  },
+  {
+    "org": "qwen",
+    "repo": "qwen3-8b",
+    "slug": "qwen/qwen3-8b",
+    "title": "Qwen3 8B",
+    "provider": "Qwen",
+    "description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE)...",
+    "date_updated": "2026-06-18",
+    "tasks": [
+      "text"
+    ],
+    "architecture": "dense",
+    "parameter_count": "8.2B",
+    "active_parameters": "8.2B",
+    "context_length": 8192,
+    "variants": [
+      {
+        "key": "default",
+        "precision": "bf16",
+        "min_gpus": 1,
+        "vram_minimum_gb": 24
+      }
+    ]
+  },
+  {
+    "org": "redhatai",
+    "repo": "diffusiongemma-26b-a4b-it-fp8-dynamic",
+    "slug": "redhatai/diffusiongemma-26b-a4b-it-fp8-dynamic",
+    "title": "DiffusionGemma 26B A4B IT FP8",
+    "provider": "Red Hat AI",
+    "description": "FP8-quantized 26B mixture-of-experts diffusion language model (4B active). Fits on a single H100 GPU.",
+    "date_updated": "2026-06-18T00:00:00.000Z",
+    "tasks": [
+      "text"
+    ],
+    "architecture": "moe",
+    "parameter_count": "26B",
+    "active_parameters": "4B",
+    "context_length": 8192,
+    "variants": [
+      {
+        "key": "default",
+        "precision": "fp8",
+        "min_gpus": 1,
+        "vram_minimum_gb": 80
+      }
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+meta:
+  title: Llama 3.1 8B Instruct
+  provider: Meta
+  description: The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models...
+  date_updated: "2026-06-18"
+  tasks:
+    - text
+model:
+  model_id: meta-llama/Llama-3.1-8B-Instruct
+  architecture: dense
+  parameter_count: 8B
+  active_parameters: 8B
+  context_length: 8192
+variants:
+  default:
+    precision: bf16
+    min_gpus: 1
+    vram_minimum_gb: 80
+    description: "TODO: Add variant description"
+deployment:
+  image: vllm/vllm-openai:nightly
+  vllm_args:
+    - "--max-num-seqs=32"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: 32Gi
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+  shm_size: 16Gi

@@ -18,12 +18,19 @@ variants:
     precision: bf16
     min_gpus: 1
     vram_minimum_gb: 29
-    description: "Full BF16 precision on a single A100 40GB or larger"
+    description: "Full BF16 precision on a single H100 80GB"
 
 deployment:
-  image: "quay.io/modh/vllm:latest"
+  image: "vllm/vllm-openai:nightly"
   vllm_args:
-    - "--max-model-len=32768"
+    - "--max-num-seqs=16"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: "32Gi"
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+  shm_size: "16Gi"
 
 guide: |
   ## Overview

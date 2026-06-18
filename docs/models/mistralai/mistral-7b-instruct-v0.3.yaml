@@ -1,0 +1,30 @@
+meta:
+  title: Mistral 7B Instruct V0.3
+  provider: Mistral AI
+  description: "TODO: Add model description"
+  date_updated: "2026-06-18"
+  tasks:
+    - text
+model:
+  model_id: mistralai/Mistral-7B-Instruct-v0.3
+  architecture: dense
+  parameter_count: 7B
+  active_parameters: 7B
+  context_length: 8192
+variants:
+  default:
+    precision: bf16
+    min_gpus: 1
+    vram_minimum_gb: 40
+    description: "TODO: Add variant description"
+deployment:
+  image: vllm/vllm-openai:nightly
+  vllm_args:
+    - "--max-num-seqs=32"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: 16Gi
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-A100-SXM4-40GB
+  shm_size: 8Gi

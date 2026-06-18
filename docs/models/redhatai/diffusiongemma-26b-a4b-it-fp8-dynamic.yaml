@@ -4,7 +4,7 @@ meta:
   description: "FP8-quantized 26B mixture-of-experts diffusion language model (4B active). Fits on a single H100 GPU."
   date_updated: 2026-06-18
   tasks:
-    - text-generation
+    - text
 
 model:
   model_id: "RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic"

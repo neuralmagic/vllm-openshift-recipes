@@ -26,8 +26,7 @@ deployment:
     - "--trust-remote-code"
     - "--max-num-seqs=4"
   env:
-    - name: VLLM_USE_V2_MODEL_RUNNER
-      value: "1"
+    VLLM_USE_V2_MODEL_RUNNER: "1"
   resources:
     gpu: 1
     cpu: "4"

@@ -1,0 +1,85 @@
+meta:
+  title: "DiffusionGemma 26B A4B IT FP8"
+  provider: "Red Hat AI"
+  description: "FP8-quantized 26B mixture-of-experts diffusion language model (4B active). Fits on a single H100 GPU."
+  date_updated: 2026-06-18
+  tasks:
+    - text-generation
+
+model:
+  model_id: "RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic"
+  architecture: moe
+  parameter_count: "26B"
+  active_parameters: "4B"
+  context_length: 8192
+
+variants:
+  default:
+    precision: fp8
+    min_gpus: 1
+    vram_minimum_gb: 80
+    description: "FP8 dynamic quantization on a single H100 80GB"
+
+deployment:
+  image: "vllm/vllm-openai:nightly"
+  vllm_args:
+    - "--trust-remote-code"
+    - "--max-num-seqs=4"
+  env:
+    - name: VLLM_USE_V2_MODEL_RUNNER
+      value: "1"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: "32Gi"
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+  shm_size: "16Gi"
+
+guide: |
+  ## Overview
+
+  DiffusionGemma 26B A4B IT is a mixture-of-experts diffusion language model
+  with 26B total parameters and 4B active parameters per token. This Red Hat AI
+  recipe uses FP8 dynamic quantization to fit the model on a single H100 80GB GPU.
+
+  Unlike autoregressive models, DiffusionGemma generates text via iterative
+  denoising — it requires the v2 model runner in vLLM.
+
+  ## Prerequisites
+
+  - OpenShift 4.14+ with the NVIDIA GPU Operator installed
+  - At least 1 NVIDIA H100 80GB GPU
+  - Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+  ## Quick Start
+
+  1. Save the generated manifests above to `deploy.yaml`
+  2. Create a namespace: `oc new-project llm-serving`
+  3. Apply: `oc apply -f deploy.yaml`
+  4. Wait for the pod to pull the model and start serving
+  5. Get the route: `oc get inferenceservice`
+
+  ## Testing the Endpoint
+
+  ```bash
+  export URL=$(oc get inferenceservice diffusiongemma -o jsonpath='{.status.url}')
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic",
+      "messages": [{"role": "user", "content": "Hello!"}]
+    }'
+  ```
+
+  ## Notes
+
+  - Requires `VLLM_USE_V2_MODEL_RUNNER=1` environment variable
+  - `--trust-remote-code` is required for this model
+  - `--max-num-seqs` is set to 4 to manage memory with diffusion decoding
+  - Uses shared memory (/dev/shm) for inter-process communication — 16Gi recommended
+
+  ## References
+
+  - [Model card](https://huggingface.co/RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic)
+  - [vLLM documentation](https://docs.vllm.ai)

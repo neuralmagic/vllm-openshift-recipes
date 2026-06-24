@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { getRecipe, getAllRoutablePairs } from '@/lib/recipes';
 import ManifestBuilder from '@/components/ManifestBuilder';
 import { cn, taskBadgeColor } from '@/lib/utils';
+import ProviderIcon from '@/components/ProviderIcon';
 
 export const dynamicParams = false;
 
@@ -43,7 +44,8 @@ export default async function RecipePage({ params }) {
       </div>
 
       <header className="space-y-3">
-        <p className="text-sm font-medium text-accent">
+        <p className="flex items-center gap-2 text-sm font-medium text-accent">
+          <ProviderIcon org={recipe.org} size={20} />
           {recipe.meta.provider}
         </p>
         <h1 className="text-3xl font-bold tracking-tight">

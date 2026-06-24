@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const PROVIDERS_DIR = path.join(process.cwd(), '..', 'public', 'providers');
+const PROVIDERS_DIR = path.join(process.cwd(), 'public', 'providers');
 
 let iconMap = null;
 

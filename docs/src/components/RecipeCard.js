@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { cn, taskBadgeColor } from '@/lib/utils';
+import ProviderIcon from '@/components/ProviderIcon';
 
 export default function RecipeCard({ recipe }) {
   const defaultVariant =
@@ -12,7 +13,8 @@ export default function RecipeCard({ recipe }) {
     >
       <div className="mb-2 flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <ProviderIcon org={recipe.org} size={16} />
             {recipe.meta.provider}
           </p>
           <h3 className="font-semibold text-card-foreground group-hover:text-accent transition-colors">

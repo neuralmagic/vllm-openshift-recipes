@@ -1,0 +1,33 @@
+meta:
+  title: NVIDIA Nemotron 3 Nano 30B A3B FP8
+  provider: Nvidia
+  description: "**Model Developer:** NVIDIA Corporation"
+  date_updated: "2026-06-24"
+  tasks:
+    - text
+model:
+  model_id: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+  architecture: dense
+  parameter_count: 31.6B
+  active_parameters: 3B
+  context_length: 32768
+variants:
+  default:
+    precision: fp8
+    min_gpus: 1
+    vram_minimum_gb: 40
+    description: "TODO: Add variant description"
+deployment:
+  image: vllm/vllm-openai:nightly
+  vllm_args:
+    - "--trust-remote-code"
+    - "--max-num-seqs=8"
+    - "--max-model-len=32768"
+    - "--kv-cache-dtype=fp8"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: 32Gi
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+  shm_size: 16Gi

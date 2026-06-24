@@ -1,22 +1,22 @@
 meta:
   title: NVIDIA Nemotron 3 Nano 30B A3B FP8
   provider: Nvidia
-  description: "**Model Developer:** NVIDIA Corporation"
+  description: "FP8-quantized 30B hybrid Mamba-2/Transformer MoE reasoning model (3.5B active). Supports togglable chain-of-thought and fits on a single H100 GPU."
   date_updated: "2026-06-24"
   tasks:
     - text
 model:
   model_id: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
-  architecture: dense
-  parameter_count: 31.6B
-  active_parameters: 3B
+  architecture: moe
+  parameter_count: 30B
+  active_parameters: 3.5B
   context_length: 32768
 variants:
   default:
     precision: fp8
     min_gpus: 1
     vram_minimum_gb: 40
-    description: "TODO: Add variant description"
+    description: "FP8 quantization on a single H100 80GB with 32K context"
 deployment:
   image: vllm/vllm-openai:nightly
   vllm_args:
@@ -31,3 +31,53 @@ deployment:
   node_selector:
     nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
   shm_size: 16Gi
+
+guide: |
+  ## Overview
+
+  NVIDIA Nemotron-3-Nano-30B-A3B is a hybrid Mamba-2/Transformer mixture-of-experts
+  model with 30B total parameters and 3.5B active parameters per token. It uses
+  128 routed experts plus 1 shared expert per MoE layer. This recipe deploys the
+  FP8-quantized variant on a single H100 80GB GPU.
+
+  The model supports togglable reasoning — it can produce chain-of-thought traces
+  within `<think>` tags before answering, or skip reasoning for faster responses.
+
+  ## Prerequisites
+
+  - OpenShift 4.14+ with the NVIDIA GPU Operator installed
+  - At least 1 NVIDIA H100 80GB GPU
+  - Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+  ## Quick Start
+
+  1. Save the generated manifests above to `deploy.yaml`
+  2. Create a namespace: `oc new-project llm-serving`
+  3. Apply: `oc apply -f deploy.yaml`
+  4. Wait for the pod to pull the model and start serving
+  5. Get the route: `oc get inferenceservice`
+
+  ## Testing the Endpoint
+
+  ```bash
+  export URL=$(oc get inferenceservice nvidia-nemotron-3-nano -o jsonpath='{.status.url}')
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
+      "messages": [{"role": "user", "content": "Hello!"}]
+    }'
+  ```
+
+  ## Notes
+
+  - `--trust-remote-code` is required for the hybrid Mamba-2/Transformer architecture
+  - `--kv-cache-dtype=fp8` reduces KV cache memory for longer sequences
+  - `--max-model-len=32768` limits context to 32K to fit in VRAM — the model natively supports up to 1M tokens
+  - `--max-num-seqs=8` limits concurrent sequences to manage memory with the MoE routing
+  - Supports six languages: English, German, Spanish, French, Italian, and Japanese
+
+  ## References
+
+  - [Model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8)
+  - [vLLM documentation](https://docs.vllm.ai)

@@ -1,0 +1,79 @@
+meta:
+  title: "Llama 3.2 1B Instruct FP8 Dynamic"
+  provider: "Red Hat AI"
+  description: "FP8-quantized 1.5B parameter Llama 3.2 instruction-tuned model. Reduces GPU memory ~50% vs BF16 with minimal accuracy loss."
+  date_updated: "2026-06-25"
+  tasks:
+    - text
+
+model:
+  model_id: "RedHatAI/Llama-3.2-1B-Instruct-FP8-dynamic"
+  architecture: dense
+  parameter_count: "1.5B"
+  active_parameters: "1.5B"
+  context_length: 131072
+
+variants:
+  default:
+    precision: fp8
+    min_gpus: 1
+    vram_minimum_gb: 16
+    description: "FP8 dynamic quantization on a single GPU"
+
+deployment:
+  image: "vllm/vllm-openai:nightly"
+  vllm_args:
+    - "--max-num-seqs=32"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: "32Gi"
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+  shm_size: "16Gi"
+
+guide: |
+  ## Overview
+
+  Llama 3.2 1B Instruct FP8 Dynamic is an FP8-quantized version of Meta's
+  Llama-3.2-1B-Instruct, created by Red Hat AI (Neural Magic). FP8 weight and
+  activation quantization reduces GPU memory by approximately 50% while
+  maintaining 98% of the original model's accuracy on OpenLLM benchmarks.
+
+  ## Prerequisites
+
+  - OpenShift 4.14+ with the NVIDIA GPU Operator installed
+  - At least 1 NVIDIA GPU with 16GB+ VRAM (A10, L4, A100, H100, etc.)
+  - Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+  ## Quick Start
+
+  1. Save the generated manifests above to `deploy.yaml`
+  2. Create a namespace: `oc new-project llm-serving`
+  3. Apply: `oc apply -f deploy.yaml`
+  4. Wait for the pod to pull the model and start serving
+  5. Get the route: `oc get inferenceservice`
+
+  ## Testing the Endpoint
+
+  ```bash
+  export URL=$(oc get inferenceservice llama-3-2-1b-instruct-fp8-dynamic -o jsonpath='{.status.url}')
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "RedHatAI/Llama-3.2-1B-Instruct-FP8-dynamic",
+      "messages": [{"role": "user", "content": "Hello!"}]
+    }'
+  ```
+
+  ## Notes
+
+  - Small enough to run on a single GPU with 16GB+ VRAM
+  - Supports 128K context natively — reduce `--max-model-len` if VRAM is limited
+  - Uses `compressed-tensors` format for native vLLM FP8 support
+  - Supports 8 languages: English, German, French, Italian, Portuguese, Hindi, Spanish, and Thai
+
+  ## References
+
+  - [Model card](https://huggingface.co/RedHatAI/Llama-3.2-1B-Instruct-FP8-dynamic)
+  - [vLLM documentation](https://docs.vllm.ai)

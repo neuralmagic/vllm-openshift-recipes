@@ -1,3 +1,0 @@
-:HL["/vllm-openshift-recipes/_next/static/chunks/43ou4-juawu_w.css","style"]
-:HL["/vllm-openshift-recipes/providers/Google.png","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"org","param":{"type":"d","key":"google","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"repo","param":{"type":"d","key":"gemma-4-12b-it","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"pBwKdFXFb9fjKFE_KgZGo"}

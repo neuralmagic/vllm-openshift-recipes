@@ -1,0 +1,30 @@
+meta:
+  title: Llama 3.2 1B Instruct FP8 Dynamic
+  provider: Red Hat AI
+  description: "- **Model Architecture:** Meta-Llama-3.2 - **Input:** Text - **Output:** Text - **Model Optimizations:** - **Weight quantization:** FP8 -..."
+  date_updated: "2026-06-25"
+  tasks:
+    - text
+model:
+  model_id: RedHatAI/Llama-3.2-1B-Instruct-FP8-dynamic
+  architecture: dense
+  parameter_count: 1.5B
+  active_parameters: 1.5B
+  context_length: 8192
+variants:
+  default:
+    precision: fp8
+    min_gpus: 1
+    vram_minimum_gb: 16
+    description: "TODO: Add variant description"
+deployment:
+  image: vllm/vllm-openai:nightly
+  vllm_args:
+    - "--max-num-seqs=32"
+  resources:
+    gpu: 1
+    cpu: "4"
+    memory: 32Gi
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-80GB-HBM3
+  shm_size: 16Gi

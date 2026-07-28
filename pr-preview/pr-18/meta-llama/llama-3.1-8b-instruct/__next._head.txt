@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[1145,["/vllm-openshift-recipes/_next/static/chunks/2anzc4edukpk7.js","/vllm-openshift-recipes/_next/static/chunks/2e_2v6-oqmntd.js"],"ViewportBoundary"]
-3:I[1145,["/vllm-openshift-recipes/_next/static/chunks/2anzc4edukpk7.js","/vllm-openshift-recipes/_next/static/chunks/2e_2v6-oqmntd.js"],"MetadataBoundary"]
-4:"$Sreact.suspense"
-5:I[61573,["/vllm-openshift-recipes/_next/static/chunks/2anzc4edukpk7.js","/vllm-openshift-recipes/_next/static/chunks/2e_2v6-oqmntd.js"],"IconMark"]
-0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Llama 3.1 8B Instruct — vLLM on OpenShift"}],["$","meta","1",{"name":"description","content":"The Meta Llama 3.1 collection of multilingual large language models (LLMs) is a collection of pretrained and instruction tuned generative models..."}],["$","link","2",{"rel":"icon","href":"/vllm-openshift-recipes/favicon.png"}],["$","$L5","3",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"u_PzuXBNvC_BjmsZ2_x5L"}

@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[7179,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"ViewportBoundary"]
-3:I[7179,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"MetadataBoundary"]
-4:"$Sreact.suspense"
-5:I[86163,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"IconMark"]
-0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"NVIDIA Nemotron 3 Nano 30B A3B FP8 — vLLM on OpenShift"}],["$","meta","1",{"name":"description","content":"FP8-quantized 30B hybrid Mamba-2/Transformer MoE reasoning model (3.5B active). Supports togglable chain-of-thought and fits on a single H100 GPU."}],["$","link","2",{"rel":"icon","href":"/vllm-openshift-recipes/favicon.png"}],["$","$L5","3",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"K399V-hbVzUcSQ4bLmZUB"}

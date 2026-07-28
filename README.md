@@ -1,4 +1,4 @@
-# vLLM on OpenShift — Deployment Recipes
+# vLLM on OpenShift Deployment Recipes
 
 Copy-paste OpenShift manifests for deploying open-weight LLMs with vLLM. New model? New recipe. `oc apply` and go.
 

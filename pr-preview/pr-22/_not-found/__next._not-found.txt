@@ -1,5 +1,0 @@
-1:"$Sreact.fragment"
-2:I[53951,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"default"]
-3:I[69782,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"default"]
-4:[]
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","template":["$","$L3",null,{}]}]]}],"isPartial":false,"staleTime":300,"varyParams":"$W4","buildId":"wXk5sPnramG5CW0_wBQ1D"}

@@ -1,6 +1,6 @@
 meta:
   title: "Muse Glimmer 30B"
-  provider: "Meta Models"
+  provider: "Meta"
   description: "Dense 30B multimodal (image-text-to-text) model with a frozen ViT-G/14 perception encoder, served via the RHAIIS muse-glimmer build. Apache 2.0."
   date_updated: "2026-08-10"
   tasks:

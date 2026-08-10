@@ -1,0 +1,94 @@
+1:"$Sreact.fragment"
+2:I[15353,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js","/vllm-openshift-recipes/_next/static/chunks/1bnwv69n60piu.js"],""]
+3:I[8156,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js","/vllm-openshift-recipes/_next/static/chunks/1bnwv69n60piu.js"],"default"]
+f:I[7179,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"OutletBoundary"]
+10:"$Sreact.suspense"
+4:Tc12,## Overview
+
+Muse Glimmer 30B is a dense, multimodal (image-text-to-text) causal
+transformer paired with a frozen ~1.8B ViT-G/14 perception encoder. The
+language model is 52 layers, hidden size 6656, SwiGLU FFN, GQA (32 query /
+2 KV heads), sliding-window 2048, RoPE θ=500,000, vocab 202,048, 131K context.
+Apache 2.0 licensed.
+
+It is distributed alongside the
+`quay.io/vllm/rhaiis-early-access:muse-glimmer` RHAIIS (Red Hat AI Inference
+Server) build. That image is the standard vLLM OpenAI-compatible server
+(UBI9 + CUDA 13) with **no model baked in** — you point it at the
+`meta-models/Muse-Glimmer-30B` weights on Hugging Face at runtime.
+
+## Prerequisites
+
+- OpenShift 4.14+ with the NVIDIA GPU Operator installed
+- 2× NVIDIA A100-80GB (or larger) on a single node for tensor parallelism
+- A pull secret with access to `quay.io/vllm/rhaiis-early-access` (early access)
+- Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+## Runtime model download
+
+The image ships with `HF_HUB_OFFLINE=1`. The repo is public (Apache 2.0), so no
+HF token is required — just set `HF_HUB_OFFLINE=0` in the serving runtime env so
+vLLM can download the weights on first start. If you mirror the model behind a
+gated/private repo, also provide `HF_TOKEN` from a secret.
+
+## Quick Start
+
+1. Save the generated manifests above to `deploy.yaml`
+2. Apply: `oc apply -f deploy.yaml`
+3. Wait for the pod to pull the image, download the weights, and start serving
+4. Get the route: `oc get inferenceservice`
+
+## Testing the Endpoint
+
+```bash
+export URL=$(oc get inferenceservice muse-glimmer -o jsonpath='{.status.url}')
+# Text
+curl -s $URL/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "muse-glimmer",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+# Image + text (multimodal)
+curl -s $URL/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "muse-glimmer",
+    "messages": [{"role": "user", "content": [
+      {"type": "text", "text": "Describe this image."},
+      {"type": "image_url", "image_url": {"url": "https://example.com/cat.jpg"}}
+    ]}]
+  }'
+```
+
+## Notes
+
+- Multimodal: accepts text + image input, produces text output.
+- `--served-model-name=muse-glimmer` exposes a clean model id on the API,
+  independent of the `meta-models/Muse-Glimmer-30B` repo path.
+- `--tensor-parallel-size=2` requires 2 GPUs on the same node plus a large
+  `/dev/shm` (16Gi here) for NCCL/torch shared memory.
+- BF16 weights are ~60GB; a 4-bit quantized variant is also released upstream if
+  you need to fit on a single GPU (adjust `--tensor-parallel-size` accordingly).
+- Context length is 131K — reduce `--max-model-len` if you need to conserve KV
+  cache VRAM.
+- Pin to A100-80GB via the node selector so the pod doesn't land on a smaller
+  or single-GPU node.
+
+## References
+
+- [Model card](https://huggingface.co/meta-models/Muse-Glimmer-30B)
+- [RHAIIS early-access image](https://quay.io/repository/vllm/rhaiis-early-access?tab=tags&tag=muse-glimmer)
+- [vLLM documentation](https://docs.vllm.ai)
+0:{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"space-y-8","children":[["$","div",null,{"children":["$","$L2",null,{"href":"/browse","className":"text-sm text-muted-foreground hover:text-foreground transition-colors","children":"← All recipes"}]}],["$","header",null,{"className":"space-y-3","children":[["$","p",null,{"className":"flex items-center gap-2 text-sm font-medium text-accent","children":[null,"Meta Models"]}],["$","h1",null,{"className":"text-3xl font-bold tracking-tight","children":"Muse Glimmer 30B"}],["$","p",null,{"className":"text-lg text-muted-foreground","children":"Dense 30B multimodal (image-text-to-text) model with a frozen ViT-G/14 perception encoder, served via the RHAIIS muse-glimmer build. Apache 2.0."}],["$","div",null,{"className":"flex flex-wrap items-center gap-3 text-sm","children":[["$","span",null,{"className":"rounded bg-muted px-2 py-1 font-mono","children":"30B"}],false,["$","span",null,{"className":"rounded bg-muted px-2 py-1 font-mono","children":["131,072"," ctx"]}],[["$","span","multimodal",{"className":"rounded-full px-2.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300","children":"multimodal"}]],["$","span",null,{"className":"text-muted-foreground","children":"dense"}]]}]]}],["$","div",null,{"className":"rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground","children":["These manifests assume you have OpenShift with the GPU Operator and RHOAI/KServe installed."," ",["$","$L2",null,{"href":"/prerequisites","className":"text-accent hover:underline","children":"Check prerequisites →"}]]}],["$","$L3",null,{"recipe":{"org":"meta-models","repo":"muse-glimmer-30b","slug":"meta-models/muse-glimmer-30b","meta":{"title":"Muse Glimmer 30B","provider":"Meta Models","description":"Dense 30B multimodal (image-text-to-text) model with a frozen ViT-G/14 perception encoder, served via the RHAIIS muse-glimmer build. Apache 2.0.","date_updated":"2026-08-10","tasks":["multimodal"]},"model":{"model_id":"meta-models/Muse-Glimmer-30B","architecture":"dense","parameter_count":"30B","active_parameters":"30B","context_length":131072},"variants":{"default":{"precision":"bf16","min_gpus":2,"vram_minimum_gb":80,"description":"Full BF16 across 2× A100-80GB (TP=2). ~60GB weights + vision encoder, leaving headroom for long-context KV cache."}},"deployment":{"image":"quay.io/vllm/rhaiis-early-access:muse-glimmer","vllm_args":["--tensor-parallel-size=2","--served-model-name=muse-glimmer"],"resources":{"gpu":2,"cpu":"8","memory":"64Gi"},"node_selector":{"nvidia.com/gpu.product":"NVIDIA-A100-SXM4-80GB"},"shm_size":"16Gi"},"guide":"$4"}}],"$L5"]}],["$L6"],"$L7"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"NFX0TkwH8nTyvBbPURsx6"}
+5:[["$","hr",null,{"className":"border-border"}],["$","article",null,{"className":"prose prose-sm dark:prose-invert max-w-none","children":[["$","h2","h2-0",{"children":"Overview"}],"\n",["$","p","p-0",{"children":"Muse Glimmer 30B is a dense, multimodal (image-text-to-text) causal\ntransformer paired with a frozen ~1.8B ViT-G/14 perception encoder. The\nlanguage model is 52 layers, hidden size 6656, SwiGLU FFN, GQA (32 query /\n2 KV heads), sliding-window 2048, RoPE θ=500,000, vocab 202,048, 131K context.\nApache 2.0 licensed."}],"\n",["$","p","p-1",{"children":["It is distributed alongside the\n",["$","code","code-0",{"children":"quay.io/vllm/rhaiis-early-access:muse-glimmer"}]," RHAIIS (Red Hat AI Inference\nServer) build. That image is the standard vLLM OpenAI-compatible server\n(UBI9 + CUDA 13) with ",["$","strong","strong-0",{"children":"no model baked in"}]," — you point it at the\n",["$","code","code-1",{"children":"meta-models/Muse-Glimmer-30B"}]," weights on Hugging Face at runtime."]}],"\n",["$","h2","h2-1",{"children":"Prerequisites"}],"\n",["$","ul","ul-0",{"children":["\n",["$","li","li-0",{"children":"OpenShift 4.14+ with the NVIDIA GPU Operator installed"}],"\n",["$","li","li-1",{"children":"2× NVIDIA A100-80GB (or larger) on a single node for tensor parallelism"}],"\n",["$","li","li-2",{"children":["A pull secret with access to ",["$","code","code-0",{"children":"quay.io/vllm/rhaiis-early-access"}]," (early access)"]}],"\n",["$","li","li-3",{"children":"Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually"}],"\n"]}],"\n",["$","h2","h2-2",{"children":"Runtime model download"}],"\n",["$","p","p-2",{"children":["The image ships with ",["$","code","code-0",{"children":"HF_HUB_OFFLINE=1"}],". The repo is public (Apache 2.0), so no\nHF token is required — just set ",["$","code","code-1",{"children":"HF_HUB_OFFLINE=0"}]," in the serving runtime env so\nvLLM can download the weights on first start. If you mirror the model behind a\ngated/private repo, also provide ",["$","code","code-2",{"children":"HF_TOKEN"}]," from a secret."]}],"\n",["$","h2","h2-3",{"children":"Quick Start"}],"\n",["$","ol","ol-0",{"children":["\n",["$","li","li-0",{"children":["Save the generated manifests above to ",["$","code","code-0",{"children":"deploy.yaml"}]]}],"\n",["$","li","li-1",{"children":["Apply: ",["$","code","code-0",{"children":"oc apply -f deploy.yaml"}]]}],"\n",["$","li","li-2",{"children":"Wait for the pod to pull the image, download the weights, and start serving"}],"\n",["$","li","li-3",{"children":["Get the route: ",["$","code","code-0",{"children":"oc get inferenceservice"}]]}],"\n"]}],"\n",["$","h2","h2-4",{"children":"Testing the Endpoint"}],"\n",["$","pre","pre-0",{"children":["$","code","code-0",{"className":"language-bash","children":"export URL=$(oc get inferenceservice muse-glimmer -o jsonpath='{.status.url}')\n# Text\ncurl -s $URL/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"muse-glimmer\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello!\"}]\n  }'\n# Image + text (multimodal)\ncurl -s $URL/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"muse-glimmer\",\n    \"messages\": [{\"role\": \"user\", \"content\": [\n      {\"type\": \"text\", \"text\": \"Describe this image.\"},\n      {\"type\": \"image_url\", \"image_url\": {\"url\": \"https://example.com/cat.jpg\"}}\n    ]}]\n  }'\n"}]}],"\n",["$","h2","h2-5",{"children":"Notes"}],"\n",["$","ul","ul-1",{"children":["\n",["$","li","li-0",{"children":"Multimodal: accepts text + image input, produces text output."}],"\n",["$","li","li-1",{"children":[["$","code","code-0",{"children":"--served-model-name=muse-glimmer"}]," exposes a clean model id on the API,\nindependent of the ",["$","code","code-1",{"children":"meta-models/Muse-Glimmer-30B"}]," repo path."]}],"\n",["$","li","li-2",{"children":["$L8"," requires 2 GPUs on the same node plus a large\n","$L9"," (16Gi here) for NCCL/torch shared memory."]}],"\n","$La","\n","$Lb","\n","$Lc","\n"]}],"\n","$Ld","\n","$Le"]}]]
+6:["$","script","script-0",{"src":"/vllm-openshift-recipes/_next/static/chunks/1bnwv69n60piu.js","async":true}]
+7:["$","$Lf",null,{"children":["$","$10",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]
+8:["$","code","code-0",{"children":"--tensor-parallel-size=2"}]
+9:["$","code","code-1",{"children":"/dev/shm"}]
+a:["$","li","li-3",{"children":["BF16 weights are ~60GB; a 4-bit quantized variant is also released upstream if\nyou need to fit on a single GPU (adjust ",["$","code","code-0",{"children":"--tensor-parallel-size"}]," accordingly)."]}]
+b:["$","li","li-4",{"children":["Context length is 131K — reduce ",["$","code","code-0",{"children":"--max-model-len"}]," if you need to conserve KV\ncache VRAM."]}]
+c:["$","li","li-5",{"children":"Pin to A100-80GB via the node selector so the pod doesn't land on a smaller\nor single-GPU node."}]
+d:["$","h2","h2-6",{"children":"References"}]
+e:["$","ul","ul-2",{"children":["\n",["$","li","li-0",{"children":["$","a","a-0",{"href":"https://huggingface.co/meta-models/Muse-Glimmer-30B","children":"Model card"}]}],"\n",["$","li","li-1",{"children":["$","a","a-0",{"href":"https://quay.io/repository/vllm/rhaiis-early-access?tab=tags&tag=muse-glimmer","children":"RHAIIS early-access image"}]}],"\n",["$","li","li-2",{"children":["$","a","a-0",{"href":"https://docs.vllm.ai","children":"vLLM documentation"}]}],"\n"]}]
+11:null

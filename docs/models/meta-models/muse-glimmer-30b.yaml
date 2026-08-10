@@ -1,6 +1,6 @@
 meta:
   title: "Muse Glimmer 30B"
-  provider: "Meta Models"
+  provider: "Meta"
   description: "Dense 30B multimodal (image-text-to-text) model with a frozen ViT-G/14 perception encoder, served via the RHAIIS muse-glimmer build. Apache 2.0."
   date_updated: "2026-08-10"
   tasks:
@@ -25,6 +25,8 @@ deployment:
   vllm_args:
     - "--tensor-parallel-size=2"
     - "--served-model-name=muse-glimmer"
+    - "--enable-auto-tool-choice"
+    - "--tool-call-parser=muse_glimmer"
   resources:
     gpu: 2
     cpu: "8"
@@ -95,6 +97,10 @@ guide: |
   ## Notes
 
   - Multimodal: accepts text + image input, produces text output.
+  - Tool calling: this RHAIIS build ships a dedicated parser, enabled here with
+    `--enable-auto-tool-choice --tool-call-parser=muse_glimmer`. It is also a
+    reasoning model — add `--reasoning-parser=muse_glimmer` to separate the
+    thinking trace into `reasoning_content`.
   - `--served-model-name=muse-glimmer` exposes a clean model id on the API,
     independent of the `meta-models/Muse-Glimmer-30B` repo path.
   - `--tensor-parallel-size=2` requires 2 GPUs on the same node plus a large

@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[7179,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"ViewportBoundary"]
+3:I[7179,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+5:I[86163,["/vllm-openshift-recipes/_next/static/chunks/35iw8a590cdb_.js","/vllm-openshift-recipes/_next/static/chunks/06f0-znt6rumj.js"],"IconMark"]
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"vLLM on OpenShift — Deployment Recipes"}],["$","meta","1",{"name":"description","content":"Copy-paste OpenShift manifests for deploying LLMs with vLLM. New model? New recipe. oc apply and go."}],["$","link","2",{"rel":"icon","href":"/vllm-openshift-recipes/favicon.png"}],["$","$L5","3",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"OiMzv1rRCworBOd02UUAC"}

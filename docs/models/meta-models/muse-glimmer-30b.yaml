@@ -1,0 +1,113 @@
+meta:
+  title: "Muse Glimmer 30B"
+  provider: "Meta Models"
+  description: "Dense 30B multimodal (image-text-to-text) model with a frozen ViT-G/14 perception encoder, served via the RHAIIS muse-glimmer build. Apache 2.0."
+  date_updated: "2026-08-10"
+  tasks:
+    - multimodal
+
+model:
+  model_id: "meta-models/Muse-Glimmer-30B"
+  architecture: dense
+  parameter_count: "30B"
+  active_parameters: "30B"
+  context_length: 131072
+
+variants:
+  default:
+    precision: bf16
+    min_gpus: 2
+    vram_minimum_gb: 80
+    description: "Full BF16 across 2× A100-80GB (TP=2). ~60GB weights + vision encoder, leaving headroom for long-context KV cache."
+
+deployment:
+  image: "quay.io/vllm/rhaiis-early-access:muse-glimmer"
+  vllm_args:
+    - "--tensor-parallel-size=2"
+    - "--served-model-name=muse-glimmer"
+  resources:
+    gpu: 2
+    cpu: "8"
+    memory: "64Gi"
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-A100-SXM4-80GB
+  shm_size: "16Gi"
+
+guide: |
+  ## Overview
+
+  Muse Glimmer 30B is a dense, multimodal (image-text-to-text) causal
+  transformer paired with a frozen ~1.8B ViT-G/14 perception encoder. The
+  language model is 52 layers, hidden size 6656, SwiGLU FFN, GQA (32 query /
+  2 KV heads), sliding-window 2048, RoPE θ=500,000, vocab 202,048, 131K context.
+  Apache 2.0 licensed.
+
+  It is distributed alongside the
+  `quay.io/vllm/rhaiis-early-access:muse-glimmer` RHAIIS (Red Hat AI Inference
+  Server) build. That image is the standard vLLM OpenAI-compatible server
+  (UBI9 + CUDA 13) with **no model baked in** — you point it at the
+  `meta-models/Muse-Glimmer-30B` weights on Hugging Face at runtime.
+
+  ## Prerequisites
+
+  - OpenShift 4.14+ with the NVIDIA GPU Operator installed
+  - 2× NVIDIA A100-80GB (or larger) on a single node for tensor parallelism
+  - A pull secret with access to `quay.io/vllm/rhaiis-early-access` (early access)
+  - Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+  ## Runtime model download
+
+  The image ships with `HF_HUB_OFFLINE=1`. The repo is public (Apache 2.0), so no
+  HF token is required — just set `HF_HUB_OFFLINE=0` in the serving runtime env so
+  vLLM can download the weights on first start. If you mirror the model behind a
+  gated/private repo, also provide `HF_TOKEN` from a secret.
+
+  ## Quick Start
+
+  1. Save the generated manifests above to `deploy.yaml`
+  2. Apply: `oc apply -f deploy.yaml`
+  3. Wait for the pod to pull the image, download the weights, and start serving
+  4. Get the route: `oc get inferenceservice`
+
+  ## Testing the Endpoint
+
+  ```bash
+  export URL=$(oc get inferenceservice muse-glimmer -o jsonpath='{.status.url}')
+  # Text
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "muse-glimmer",
+      "messages": [{"role": "user", "content": "Hello!"}]
+    }'
+  # Image + text (multimodal)
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "muse-glimmer",
+      "messages": [{"role": "user", "content": [
+        {"type": "text", "text": "Describe this image."},
+        {"type": "image_url", "image_url": {"url": "https://example.com/cat.jpg"}}
+      ]}]
+    }'
+  ```
+
+  ## Notes
+
+  - Multimodal: accepts text + image input, produces text output.
+  - `--served-model-name=muse-glimmer` exposes a clean model id on the API,
+    independent of the `meta-models/Muse-Glimmer-30B` repo path.
+  - `--tensor-parallel-size=2` requires 2 GPUs on the same node plus a large
+    `/dev/shm` (16Gi here) for NCCL/torch shared memory.
+  - BF16 weights are ~60GB; a 4-bit quantized variant is also released upstream if
+    you need to fit on a single GPU (adjust `--tensor-parallel-size` accordingly).
+  - Context length is 131K — reduce `--max-model-len` if you need to conserve KV
+    cache VRAM.
+  - Pin to A100-80GB via the node selector so the pod doesn't land on a smaller
+    or single-GPU node.
+
+  ## References
+
+  - [Model card](https://huggingface.co/meta-models/Muse-Glimmer-30B)
+  - [RHAIIS early-access image](https://quay.io/repository/vllm/rhaiis-early-access?tab=tags&tag=muse-glimmer)
+  - [vLLM documentation](https://docs.vllm.ai)

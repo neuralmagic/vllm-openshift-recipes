@@ -11,7 +11,7 @@ Each model gets a YAML recipe in `docs/models/<org>/<repo>.yaml`. Merge a PR to 
 1. Create `docs/models/<hf-org>/<hf-repo>.yaml` (see existing recipes for the format)
 2. Run `pnpm validate` from `docs/` to check your YAML
 3. Run `pnpm dev` from `docs/` to preview at http://localhost:3000
-4. Open a PR — the site rebuilds on merge
+4. Open a PR and the site rebuilds on merge
 
 ## Development
 

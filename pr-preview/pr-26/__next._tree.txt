@@ -3,4 +3,4 @@
 :HL["/vllm-openshift-recipes/providers/meta-models.png","image"]
 :HL["/vllm-openshift-recipes/providers/meta-llama.png","image"]
 :HL["/vllm-openshift-recipes/providers/Google.png","image"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"Kz73aKJQ0TUL5LPuWSCxZ"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"teAOmHpD62ZJGXfZ8WuF6"}

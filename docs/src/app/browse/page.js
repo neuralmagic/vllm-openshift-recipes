@@ -3,7 +3,7 @@ import RecipeCard from '@/components/RecipeCard';
 import ProviderIcon from '@/components/ProviderIcon';
 
 export const metadata = {
-  title: 'Browse Recipes — vLLM on OpenShift',
+  title: 'Browse Recipes | vLLM on OpenShift',
 };
 
 export default function Browse() {

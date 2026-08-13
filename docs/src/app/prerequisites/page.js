@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Prerequisites — vLLM on OpenShift',
+  title: 'Prerequisites | vLLM on OpenShift',
 };
 
 export default function Prerequisites() {

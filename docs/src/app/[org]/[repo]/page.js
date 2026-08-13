@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
   const recipe = getRecipe(org, repo);
   if (!recipe) return {};
   return {
-    title: `${recipe.meta.title} — vLLM on OpenShift`,
+    title: `${recipe.meta.title} | vLLM on OpenShift`,
     description: recipe.meta.description,
   };
 }

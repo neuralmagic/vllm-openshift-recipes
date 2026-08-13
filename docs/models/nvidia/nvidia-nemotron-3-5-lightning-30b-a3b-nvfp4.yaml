@@ -1,0 +1,145 @@
+meta:
+  title: NVIDIA Nemotron 3.5 Lightning 30B A3B NVFP4
+  provider: Nvidia
+  description: "NVFP4-quantized 30B hybrid Mamba-2/Transformer MoE with reasoning and agentic tool calling. 256K context on 2x H100 via the RHAIIS nemotron-3.5 build."
+  date_updated: "2026-08-13"
+  tasks:
+    - text
+
+model:
+  model_id: nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+  architecture: moe
+  parameter_count: 30B
+  active_parameters: 3B
+  context_length: 262144
+
+variants:
+  default:
+    precision: nvfp4
+    min_gpus: 2
+    vram_minimum_gb: 80
+    description: "NVFP4 weights (~9GB loaded) across 2x H100 80GB (TP=2), 256K context at 0.9 GPU memory utilization."
+
+deployment:
+  image: quay.io/vllm/rhaiis-early-access:nemotron-3.5
+  vllm_args:
+    - "--trust-remote-code"
+    - "--tensor-parallel-size=2"
+    - "--max-model-len=262144"
+    - "--gpu-memory-utilization=0.9"
+    - "--served-model-name=nemotron"
+    - "--reasoning-parser=nemotron_v3"
+    - "--enable-auto-tool-choice"
+    - "--tool-call-parser=qwen3_coder"
+  resources:
+    gpu: 2
+    cpu: "8"
+    memory: 64Gi
+  node_selector:
+    nvidia.com/gpu.product: NVIDIA-H100-SXM5-80GB
+  shm_size: 16Gi
+
+guide: |
+  ## Overview
+
+  NVIDIA Nemotron 3.5 Lightning 30B-A3B is a hybrid Mamba-2/Transformer
+  mixture-of-experts model with 30B total parameters and approximately 3B
+  active parameters per token. This recipe deploys the NVFP4-quantized
+  variant via the RHAIIS `nemotron-3.5` early-access image.
+
+  Despite the extreme compression, the model loads in under 10GB of VRAM,
+  leaving room for a 256K token context window across two H100 80GB GPUs.
+  The NVFP4 format is designed for native execution on NVIDIA Blackwell
+  hardware; on H100 it runs via the Marlin FP4 kernel, which still delivers
+  strong throughput for a model this size.
+
+  Nemotron 3.5 Lightning supports both chain-of-thought reasoning
+  (via `<think>` tags, extracted by `nemotron_v3`) and OpenAI-compatible
+  tool calling (via `qwen3_coder`), making it well-suited for agentic
+  coding and multi-step reasoning workloads.
+
+  ## Prerequisites
+
+  - OpenShift 4.14+ with the NVIDIA GPU Operator installed
+  - 2x NVIDIA H100 80GB on a single node for tensor parallelism
+  - A pull secret with access to `quay.io/vllm/rhaiis-early-access` (early access)
+  - Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+  ## Model weights
+
+  The RHAIIS image ships with `HF_HUB_OFFLINE=1`. The model is gated on
+  Hugging Face — you must accept the license at
+  https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+  and provide an `HF_TOKEN` secret, or pre-download the weights to a PVC
+  and set `HF_HUB_OFFLINE=0` at runtime.
+
+  Recommended approach using a shared ReadWriteMany PVC:
+
+  ```bash
+  # From a dev pod with internet access and the PVC mounted at /root/.cache/huggingface
+  huggingface-cli download nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+  ```
+
+  Mount the same PVC in the serving deployment; the RHAIIS image will find
+  the cached weights automatically when `HF_HUB_OFFLINE=1`.
+
+  ## Quick Start
+
+  1. Save the generated manifests above to `deploy.yaml`
+  2. Apply: `oc apply -f deploy.yaml`
+  3. Wait for the pod to load the weights and complete CUDA graph capture (~3-4 min)
+  4. Get the route: `oc get inferenceservice`
+
+  ## Testing the Endpoint
+
+  ```bash
+  export URL=$(oc get inferenceservice nemotron -o jsonpath='{.status.url}')
+
+  # Basic chat
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "nemotron",
+      "messages": [{"role": "user", "content": "Hello!"}]
+    }'
+
+  # Tool calling
+  curl -s $URL/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+      "model": "nemotron",
+      "tools": [{
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "description": "Get the current weather",
+          "parameters": {
+            "type": "object",
+            "properties": {"location": {"type": "string"}},
+            "required": ["location"]
+          }
+        }
+      }],
+      "tool_choice": "auto",
+      "messages": [{"role": "user", "content": "What is the weather in Boston?"}]
+    }'
+  ```
+
+  ## Notes
+
+  - `--reasoning-parser=nemotron_v3` extracts chain-of-thought from `<think>` tags
+    into the `reasoning_content` field, keeping `content` clean for downstream use
+  - `--tool-call-parser=qwen3_coder` handles the model's native function-call
+    format and surfaces it as a standard OpenAI `tool_calls` array
+  - `--enable-auto-tool-choice` is required alongside `--tool-call-parser`
+  - NVFP4 on H100 uses the Marlin kernel (no native FP4 hardware support);
+    native FP4 execution is available on NVIDIA Blackwell (B100/B200) and H200
+  - Reduce `--max-model-len` to conserve KV cache VRAM if you do not need
+    the full 256K context window
+  - `--trust-remote-code` is required for the hybrid Mamba-2/Transformer architecture
+
+  ## References
+
+  - [Model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4)
+  - [RHAIIS early-access image](https://quay.io/repository/vllm/rhaiis-early-access?tab=tags&tag=nemotron-3.5)
+  - [vLLM documentation](https://docs.vllm.ai)

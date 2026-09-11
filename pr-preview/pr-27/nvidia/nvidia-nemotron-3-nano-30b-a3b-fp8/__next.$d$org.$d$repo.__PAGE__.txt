@@ -1,0 +1,82 @@
+1:"$Sreact.fragment"
+2:I[76194,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js","/vllm-openshift-recipes/_next/static/chunks/2gby5k_tyaoaj.js"],""]
+3:I[8156,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js","/vllm-openshift-recipes/_next/static/chunks/2gby5k_tyaoaj.js"],"default"]
+:HL["/vllm-openshift-recipes/providers/nvidia.png","image"]
+4:T727,## Overview
+
+NVIDIA Nemotron-3-Nano-30B-A3B is a hybrid Mamba-2/Transformer mixture-of-experts
+model with 30B total parameters and 3.5B active parameters per token. It uses
+128 routed experts plus 1 shared expert per MoE layer. This recipe deploys the
+FP8-quantized variant on a single H100 80GB GPU.
+
+The model supports togglable reasoning — it can produce chain-of-thought traces
+within `<think>` tags before answering, or skip reasoning for faster responses.
+
+## Prerequisites
+
+- OpenShift 4.14+ with the NVIDIA GPU Operator installed
+- At least 1 NVIDIA H100 80GB GPU
+- Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually
+
+## Quick Start
+
+1. Save the generated manifests above to `deploy.yaml`
+2. Create a namespace: `oc new-project llm-serving`
+3. Apply: `oc apply -f deploy.yaml`
+4. Wait for the pod to pull the model and start serving
+5. Get the route: `oc get inferenceservice`
+
+## Testing the Endpoint
+
+```bash
+export URL=$(oc get inferenceservice nvidia-nemotron-3-nano -o jsonpath='{.status.url}')
+curl -s $URL/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+## Notes
+
+- `--trust-remote-code` is required for the hybrid Mamba-2/Transformer architecture
+- `--kv-cache-dtype=fp8` reduces KV cache memory for longer sequences
+- `--max-model-len=32768` limits context to 32K to fit in VRAM — the model natively supports up to 1M tokens
+- `--max-num-seqs=8` limits concurrent sequences to manage memory with the MoE routing
+- Supports six languages: English, German, Spanish, French, Italian, and Japanese
+
+## References
+
+- [Model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8)
+- [vLLM documentation](https://docs.vllm.ai)
+9:X
+e:X
+e:C
+0:{"buildId":"A1-lyJW08c167F1VNmsH5","data":[{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"space-y-8","children":[["$","div",null,{"children":["$","$L2",null,{"href":"/browse","className":"text-sm text-muted-foreground hover:text-foreground transition-colors","children":"← All recipes"}]}],["$","header",null,{"className":"space-y-3","children":[["$","p",null,{"className":"flex items-center gap-2 text-sm font-medium text-accent","children":[["$","img",null,{"src":"/vllm-openshift-recipes/providers/nvidia.png","alt":"","width":20,"height":20,"className":"inline-block rounded-sm object-contain "}],"Nvidia"]}],["$","h1",null,{"className":"text-3xl font-bold tracking-tight","children":"NVIDIA Nemotron 3 Nano 30B A3B FP8"}],["$","p",null,{"className":"text-lg text-muted-foreground","children":"FP8-quantized 30B hybrid Mamba-2/Transformer MoE reasoning model (3.5B active). Supports togglable chain-of-thought and fits on a single H100 GPU."}],["$","div",null,{"className":"flex flex-wrap items-center gap-3 text-sm","children":[["$","span",null,{"className":"rounded bg-muted px-2 py-1 font-mono","children":"30B"}],["$","span",null,{"className":"rounded bg-muted px-2 py-1 font-mono","children":["3.5B"," active"]}],["$","span",null,{"className":"rounded bg-muted px-2 py-1 font-mono","children":["32,768"," ctx"]}],[["$","span","text",{"className":"rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300","children":"text"}]],["$","span",null,{"className":"text-muted-foreground","children":"moe"}]]}]]}],["$","div",null,{"className":"rounded-lg border border-border bg-muted p-4 text-sm text-muted-foreground","children":["These manifests assume you have OpenShift with the GPU Operator and RHOAI/KServe installed."," ",["$","$L2",null,{"href":"/prerequisites","className":"text-accent hover:underline","children":"Check prerequisites →"}]]}],["$","$L3",null,{"recipe":{"org":"nvidia","repo":"nvidia-nemotron-3-nano-30b-a3b-fp8","slug":"nvidia/nvidia-nemotron-3-nano-30b-a3b-fp8","meta":{"title":"NVIDIA Nemotron 3 Nano 30B A3B FP8","provider":"Nvidia","description":"FP8-quantized 30B hybrid Mamba-2/Transformer MoE reasoning model (3.5B active). Supports togglable chain-of-thought and fits on a single H100 GPU.","date_updated":"2026-06-24","tasks":["text"]},"model":{"model_id":"nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8","architecture":"moe","parameter_count":"30B","active_parameters":"3.5B","context_length":32768},"variants":{"default":{"precision":"fp8","min_gpus":1,"vram_minimum_gb":40,"description":"FP8 quantization on a single H100 80GB with 32K context"}},"deployment":{"image":"vllm/vllm-openai:nightly","vllm_args":["--trust-remote-code","--max-num-seqs=8","--max-model-len=32768","--kv-cache-dtype=fp8"],"resources":{"gpu":1,"cpu":"4","memory":"32Gi"},"node_selector":{"nvidia.com/gpu.product":"NVIDIA-H100-80GB-HBM3"},"shm_size":"16Gi"},"guide":"$4"}}],"$L5"]}],["$L6"],"$L7"]}],"isPartial":"$@8","staleTime":"$9","varyParams":null},{"rsc":"$La","isPartial":"$@b","staleTime":"$9","varyParams":null},{"rsc":"$Lc","isPartial":"$@d","staleTime":"$9","varyParams":"$e"},{"rsc":"$Lf","isPartial":"$@10","staleTime":"$9","varyParams":"$e"},{"rsc":"$L11","isPartial":"$@12","staleTime":"$9","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@13","rootVaryParams":null,"needsRuntimeRequest":"$@14"}
+15:I[99179,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"OutletBoundary"]
+16:"$Sreact.suspense"
+18:I[99179,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"ViewportBoundary"]
+19:I[99179,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"MetadataBoundary"]
+1a:I[21030,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"IconMark"]
+1b:I[2285,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"default"]
+1c:I[73687,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"default"]
+1d:I[57953,["/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js"],"Image"]
+:HL["/vllm-openshift-recipes/_next/static/chunks/0yvy1crp0nl4v.css","style"]
+5:[["$","hr",null,{"className":"border-border"}],["$","article",null,{"className":"prose prose-sm dark:prose-invert max-w-none","children":[["$","h2","h2-0",{"children":"Overview"}],"\n",["$","p","p-0",{"children":"NVIDIA Nemotron-3-Nano-30B-A3B is a hybrid Mamba-2/Transformer mixture-of-experts\nmodel with 30B total parameters and 3.5B active parameters per token. It uses\n128 routed experts plus 1 shared expert per MoE layer. This recipe deploys the\nFP8-quantized variant on a single H100 80GB GPU."}],"\n",["$","p","p-1",{"children":["The model supports togglable reasoning — it can produce chain-of-thought traces\nwithin ",["$","code","code-0",{"children":"<think>"}]," tags before answering, or skip reasoning for faster responses."]}],"\n",["$","h2","h2-1",{"children":"Prerequisites"}],"\n",["$","ul","ul-0",{"children":["\n",["$","li","li-0",{"children":"OpenShift 4.14+ with the NVIDIA GPU Operator installed"}],"\n",["$","li","li-1",{"children":"At least 1 NVIDIA H100 80GB GPU"}],"\n",["$","li","li-2",{"children":"Red Hat OpenShift AI (RHOAI) operator installed, or KServe configured manually"}],"\n"]}],"\n",["$","h2","h2-2",{"children":"Quick Start"}],"\n",["$","ol","ol-0",{"children":["\n",["$","li","li-0",{"children":["Save the generated manifests above to ",["$","code","code-0",{"children":"deploy.yaml"}]]}],"\n",["$","li","li-1",{"children":["Create a namespace: ",["$","code","code-0",{"children":"oc new-project llm-serving"}]]}],"\n",["$","li","li-2",{"children":["Apply: ",["$","code","code-0",{"children":"oc apply -f deploy.yaml"}]]}],"\n",["$","li","li-3",{"children":"Wait for the pod to pull the model and start serving"}],"\n",["$","li","li-4",{"children":["Get the route: ",["$","code","code-0",{"children":"oc get inferenceservice"}]]}],"\n"]}],"\n",["$","h2","h2-3",{"children":"Testing the Endpoint"}],"\n",["$","pre","pre-0",{"children":["$","code","code-0",{"className":"language-bash","children":"export URL=$(oc get inferenceservice nvidia-nemotron-3-nano -o jsonpath='{.status.url}')\ncurl -s $URL/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Hello!\"}]\n  }'\n"}]}],"\n",["$","h2","h2-4",{"children":"Notes"}],"\n",["$","ul","ul-1",{"children":["\n",["$","li","li-0",{"children":[["$","code","code-0",{"children":"--trust-remote-code"}]," is required for the hybrid Mamba-2/Transformer architecture"]}],"\n",["$","li","li-1",{"children":[["$","code","code-0",{"children":"--kv-cache-dtype=fp8"}]," reduces KV cache memory for longer sequences"]}],"\n",["$","li","li-2",{"children":[["$","code","code-0",{"children":"--max-model-len=32768"}]," limits context to 32K to fit in VRAM — the model natively supports up to 1M tokens"]}],"\n",["$","li","li-3",{"children":[["$","code","code-0",{"children":"--max-num-seqs=8"}]," limits concurrent sequences to manage memory with the MoE routing"]}],"\n",["$","li","li-4",{"children":"Supports six languages: English, German, Spanish, French, Italian, and Japanese"}],"\n"]}],"\n",["$","h2","h2-5",{"children":"References"}],"\n",["$","ul","ul-2",{"children":["\n",["$","li","li-0",{"children":["$","a","a-0",{"href":"https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8","children":"Model card"}]}],"\n",["$","li","li-1",{"children":["$","a","a-0",{"href":"https://docs.vllm.ai","children":"vLLM documentation"}]}],"\n"]}]]}]]
+6:["$","script","script-0",{"src":"/vllm-openshift-recipes/_next/static/chunks/2gby5k_tyaoaj.js","async":true}]
+7:["$","$L15",null,{"children":["$","$16",null,{"name":"Next.MetadataOutlet","children":"$@17"}]}]
+a:["$","$1","h",{"children":[null,["$","$L18",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L19",null,{"children":["$","$16",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"NVIDIA Nemotron 3 Nano 30B A3B FP8 | vLLM on OpenShift"}],["$","meta","1",{"name":"description","content":"FP8-quantized 30B hybrid Mamba-2/Transformer MoE reasoning model (3.5B active). Supports togglable chain-of-thought and fits on a single H100 GPU."}],["$","link","2",{"rel":"icon","href":"/vllm-openshift-recipes/favicon.png"}],["$","$L1a","3",{}]]}]}]}],null]}]
+c:["$","$1","c",{"children":[null,["$","$L1b",null,{"parallelRouterKey":"children","template":["$","$L1c",null,{}]}]]}]
+f:["$","$1","c",{"children":[null,["$","$L1b",null,{"parallelRouterKey":"children","template":["$","$L1c",null,{}]}]]}]
+11:["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/vllm-openshift-recipes/_next/static/chunks/0yvy1crp0nl4v.css","precedence":"next"}],["$","script","script-0",{"src":"/vllm-openshift-recipes/_next/static/chunks/3oejgb3qj7683.js","async":true}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"min-h-screen antialiased","children":[["$","header",null,{"className":"sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm","children":["$","div",null,{"className":"mx-auto flex h-14 max-w-6xl items-center justify-between px-4","children":[["$","$L2",null,{"href":"/","className":"flex items-center gap-2 font-semibold","children":[["$","$L1d",null,{"src":"/vllm-openshift-recipes/openshift-icon.svg","alt":"OpenShift","width":24,"height":24}],["$","span",null,{"children":"vLLM on OpenShift"}],["$","span",null,{"className":"text-muted-foreground","children":"/ recipes"}]]}],["$","nav",null,{"className":"flex items-center gap-4 text-sm","children":[["$","$L2",null,{"href":"/browse","className":"text-muted-foreground hover:text-foreground transition-colors","children":"Browse"}],["$","$L2",null,{"href":"/prerequisites","className":"text-muted-foreground hover:text-foreground transition-colors","children":"Prerequisites"}],["$","a",null,{"href":"https://docs.vllm.ai","target":"_blank","rel":"noopener noreferrer","className":"text-muted-foreground hover:text-foreground transition-colors","children":"vLLM Docs"}],["$","a",null,{"href":"https://github.com/neuralmagic/vllm-openshift-recipes","target":"_blank","rel":"noopener noreferrer","className":"text-muted-foreground hover:text-foreground transition-colors","children":"GitHub"}]]}]]}]}],["$","main",null,{"className":"mx-auto max-w-6xl px-4 py-8","children":["$","$L1b",null,{"parallelRouterKey":"children","template":["$","$L1c",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}],["$","footer",null,{"className":"border-t border-border py-6 text-center text-sm text-muted-foreground","children":["$","div",null,{"className":"mx-auto max-w-6xl px-4","children":["Built for day-zero model deployments on OpenShift."," ",["$","a",null,{"href":"https://github.com/neuralmagic/vllm-openshift-recipes","className":"underline hover:text-foreground","children":"Contribute a recipe"}]]}]}]]}]}]]}]
+17:null
+14:true
+9:300
+9:C
+13:0
+b:"$undefined"
+d:"$undefined"
+10:"$undefined"
+12:"$undefined"
+8:"$undefined"
